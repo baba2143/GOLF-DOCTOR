@@ -44,3 +44,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 .env
+
+# Firebase/Google Services - NEVER commit these!
+**/google-services.json
+**/GoogleService-Info.plist
+
+# API Keys and secrets
+*.keystore
+key.properties
