@@ -5,6 +5,7 @@ import 'package:golf_doctor_app/features/diagnosis/data/diagnosis_repository.dar
 import 'package:golf_doctor_app/core/models/diagnosis.dart';
 import 'package:golf_doctor_app/core/services/supabase_service.dart';
 import 'package:golf_doctor_app/shared/widgets/loading_overlay.dart';
+import 'package:golf_doctor_app/shared/widgets/video_player_widget.dart';
 import 'package:golf_doctor_app/shared/theme/app_colors.dart';
 
 final diagnosisDetailProvider =
@@ -381,19 +382,9 @@ class _MessageBubble extends StatelessWidget {
 
                   // Video if present
                   if (message.videoUrl != null) ...[
-                    Container(
+                    VideoThumbnailWidget(
+                      videoUrl: message.videoUrl!,
                       height: 150,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.play_circle_outline,
-                          size: 48,
-                          color: Colors.white,
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 8),
                   ],

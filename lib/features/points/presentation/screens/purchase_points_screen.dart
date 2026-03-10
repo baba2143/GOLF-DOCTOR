@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:golf_doctor_app/features/points/data/points_repository.dart';
 import 'package:golf_doctor_app/core/models/points.dart';
 import 'package:golf_doctor_app/shared/widgets/loading_overlay.dart';
@@ -25,16 +24,21 @@ class _PurchasePointsScreenState extends ConsumerState<PurchasePointsScreen> {
 
     try {
       final repo = ref.read(pointsRepositoryProvider);
-      final checkoutUrl = await repo.createCheckoutSession(
+
+      // テスト用：直接DBにポイントを追加
+      // TODO: 本番ではStripe連携に置き換え
+      await repo.purchasePointsDirectly(
         package: _selectedPackage!,
       );
 
-      // Open Stripe checkout in browser
-      final uri = Uri.parse(checkoutUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        throw Exception('Could not launch checkout URL');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${_selectedPackage!.totalPoints}ポイントを購入しました'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context).pop(true); // 成功を返す
       }
     } catch (e) {
       if (mounted) {

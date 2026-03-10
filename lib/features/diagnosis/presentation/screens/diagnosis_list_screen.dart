@@ -7,11 +7,25 @@ import 'package:golf_doctor_app/core/models/diagnosis.dart';
 import 'package:golf_doctor_app/shared/widgets/loading_overlay.dart';
 import 'package:golf_doctor_app/shared/theme/app_colors.dart';
 
+// グローバルなリフレッシュキー
+final diagnosesRefreshKeyProvider = StateProvider<int>((ref) => 0);
+
 final diagnosesProvider =
-    FutureProvider.autoDispose<List<Diagnosis>>((ref) async {
+    FutureProvider<List<Diagnosis>>((ref) async {
+  // リフレッシュキーを監視して、変更時に再取得
+  ref.watch(diagnosesRefreshKeyProvider);
+
   final repo = ref.read(diagnosisRepositoryProvider);
-  return repo.getUserDiagnoses();
+  print('=== diagnosesProvider fetching ===');
+  final result = await repo.getUserDiagnoses();
+  print('=== diagnosesProvider fetched ${result.length} items ===');
+  return result;
 });
+
+// 診断一覧をリフレッシュするヘルパー
+void refreshDiagnoses(WidgetRef ref) {
+  ref.read(diagnosesRefreshKeyProvider.notifier).state++;
+}
 
 class DiagnosisListScreen extends ConsumerWidget {
   const DiagnosisListScreen({super.key});
@@ -32,7 +46,7 @@ class DiagnosisListScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              Text('エラーが発生しました'),
+              const Text('エラーが発生しました'),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(diagnosesProvider),
@@ -72,7 +86,8 @@ class DiagnosisListScreen extends ConsumerWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              ref.invalidate(diagnosesProvider);
+              refreshDiagnoses(ref);
+              await ref.read(diagnosesProvider.future);
             },
             child: ListView.builder(
               padding: const EdgeInsets.all(16),

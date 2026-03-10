@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:golf_doctor_app/features/pro/data/pro_repository.dart';
 import 'package:golf_doctor_app/features/points/data/points_repository.dart';
 import 'package:golf_doctor_app/features/diagnosis/data/diagnosis_repository.dart';
+import 'package:golf_doctor_app/features/diagnosis/presentation/screens/diagnosis_list_screen.dart';
 import 'package:golf_doctor_app/shared/widgets/loading_overlay.dart';
 import 'package:golf_doctor_app/shared/theme/app_colors.dart';
 import 'package:golf_doctor_app/core/models/profile.dart';
@@ -107,20 +108,27 @@ class _CreateDiagnosisScreenState extends ConsumerState<CreateDiagnosisScreen> {
         return;
       }
 
-      // Upload video
-      // TODO: Actually upload video to storage
+      // Upload video to storage (works on both web and mobile)
+      final bytes = await _selectedVideo!.readAsBytes();
+      final videoUrl = await diagnosisRepo.uploadVideoBytes(
+        bytes: bytes,
+        fileName: _selectedVideo!.name,
+      );
 
-      // Create diagnosis
+      // Create diagnosis with uploaded video URL
       await diagnosisRepo.createDiagnosis(
         proId: widget.proId,
         price: pro.price,
-        videoUrl: 'placeholder_url', // Replace with actual uploaded URL
+        videoUrl: videoUrl,
         text: _messageController.text.trim().isNotEmpty
             ? _messageController.text.trim()
             : null,
       );
 
       if (mounted) {
+        // 診断一覧をリフレッシュ
+        refreshDiagnoses(ref);
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('診断を依頼しました')),
         );
@@ -289,33 +297,50 @@ class _CreateDiagnosisScreenState extends ConsumerState<CreateDiagnosisScreen> {
                   const SizedBox(height: 12),
 
                   if (_selectedVideo != null) ...[
-                    Container(
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width - 32,
                       height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          const Icon(
-                            Icons.play_circle_outline,
-                            size: 64,
-                            color: Colors.white,
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.white),
-                              onPressed: () {
-                                setState(() {
-                                  _selectedVideo = null;
-                                });
-                              },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Stack(
+                          children: [
+                            const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.play_circle_outline,
+                                    size: 64,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    '動画を選択しました',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: IconButton(
+                                icon: const Icon(Icons.close, color: Colors.white),
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedVideo = null;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ] else ...[
