@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:golf_doctor_app/features/diagnosis/data/diagnosis_repository.dart';
 import 'package:golf_doctor_app/core/models/diagnosis.dart';
@@ -27,11 +28,167 @@ class DiagnosisDetailScreen extends ConsumerStatefulWidget {
 class _DiagnosisDetailScreenState extends ConsumerState<DiagnosisDetailScreen> {
   final _messageController = TextEditingController();
   bool _isSending = false;
+  XFile? _selectedAnswerVideo;
+  bool _isUploadingVideo = false;
 
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  /// 動画をアップロード
+  Future<String?> _uploadVideo({
+    required String diagnosisId,
+  }) async {
+    if (_selectedAnswerVideo == null) return null;
+
+    final repo = ref.read(diagnosisRepositoryProvider);
+    final bytes = await _selectedAnswerVideo!.readAsBytes();
+    return await repo.uploadVideoBytes(
+      bytes: bytes,
+      fileName: _selectedAnswerVideo!.name,
+      diagnosisId: diagnosisId,
+    );
+  }
+
+  /// ギャラリーから動画を選択
+  Future<void> _pickAnswerVideo() async {
+    final picker = ImagePicker();
+    final video = await picker.pickVideo(
+      source: ImageSource.gallery,
+      maxDuration: const Duration(minutes: 5),
+    );
+
+    if (video != null) {
+      setState(() {
+        _selectedAnswerVideo = video;
+      });
+    }
+  }
+
+  /// カメラで動画を撮影
+  Future<void> _recordAnswerVideo() async {
+    final picker = ImagePicker();
+    final video = await picker.pickVideo(
+      source: ImageSource.camera,
+      maxDuration: const Duration(minutes: 5),
+    );
+
+    if (video != null) {
+      setState(() {
+        _selectedAnswerVideo = video;
+      });
+    }
+  }
+
+  /// 動画選択ダイアログを表示
+  void _showVideoSelectionDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('ギャラリーから選択'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickAnswerVideo();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.videocam),
+              title: const Text('動画を撮影'),
+              onTap: () {
+                Navigator.pop(context);
+                _recordAnswerVideo();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.close),
+              title: const Text('キャンセル'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 選択した動画をクリア
+  void _clearSelectedVideo() {
+    setState(() {
+      _selectedAnswerVideo = null;
+    });
+  }
+
+  /// 回答を送信（動画 + テキスト）
+  Future<void> _submitAnswer(Diagnosis diagnosis) async {
+    if (_selectedAnswerVideo == null && _messageController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('動画またはテキストを入力してください')),
+      );
+      return;
+    }
+
+    setState(() => _isUploadingVideo = true);
+
+    try {
+      final repo = ref.read(diagnosisRepositoryProvider);
+
+      // 動画がある場合は変換 + アップロード
+      final videoUrl = await _uploadVideo(
+        diagnosisId: diagnosis.id,
+      );
+
+      // メッセージタイプを判定
+      final messageType = diagnosis.status == DiagnosisStatus.pending
+          ? MessageType.answer
+          : MessageType.followupAnswer;
+
+      // メッセージを追加（ステータス更新も自動で行われる）
+      await repo.addMessage(
+        diagnosisId: diagnosis.id,
+        messageType: messageType,
+        text: _messageController.text.trim().isNotEmpty
+            ? _messageController.text.trim()
+            : null,
+        videoUrl: videoUrl,
+      );
+
+      // UIをリセット
+      _messageController.clear();
+      setState(() {
+        _selectedAnswerVideo = null;
+      });
+
+      // データをリフレッシュ
+      ref.invalidate(diagnosisDetailProvider(widget.diagnosisId));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              messageType == MessageType.answer
+                  ? '回答を送信しました'
+                  : '追加回答を送信しました',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('送信に失敗しました: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isUploadingVideo = false);
+      }
+    }
   }
 
   @override
@@ -218,6 +375,10 @@ class _DiagnosisDetailScreenState extends ConsumerState<DiagnosisDetailScreen> {
   }
 
   Widget _buildInputArea(Diagnosis diagnosis, bool isUser, bool isPro) {
+    final canProAnswer = isPro &&
+        (diagnosis.status == DiagnosisStatus.pending ||
+            diagnosis.status == DiagnosisStatus.inProgress);
+
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -230,31 +391,107 @@ class _DiagnosisDetailScreenState extends ConsumerState<DiagnosisDetailScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (isPro && diagnosis.status == DiagnosisStatus.pending) ...[
-              ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Video recording/selection
-                },
-                icon: const Icon(Icons.videocam),
-                label: const Text('動画で回答する'),
-              ),
-              const SizedBox(height: 8),
+            // プロ用: 動画選択/プレビューエリア
+            if (canProAnswer) ...[
+              if (_selectedAnswerVideo != null) ...[
+                // 動画プレビュー
+                Container(
+                  width: double.infinity,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Stack(
+                    children: [
+                      const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.play_circle_outline,
+                              size: 48,
+                              color: Colors.white,
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              '回答動画を選択しました',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        top: 4,
+                        right: 4,
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: _clearSelectedVideo,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ] else ...[
+                // 動画選択ボタン
+                ElevatedButton.icon(
+                  onPressed: _isUploadingVideo ? null : _showVideoSelectionDialog,
+                  icon: const Icon(Icons.videocam),
+                  label: Text(
+                    diagnosis.status == DiagnosisStatus.pending
+                        ? '動画で回答する'
+                        : '追加回答の動画を選択',
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ],
+
+            // ローディング表示
+            if (_isUploadingVideo) ...[
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      '動画をアップロード中...',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
+            // テキスト入力と送信ボタン
             Row(
               children: [
                 if (isUser) ...[
                   IconButton(
                     icon: const Icon(Icons.videocam),
-                    onPressed: () {
-                      // TODO: Video upload
-                    },
+                    onPressed: _showVideoSelectionDialog,
                   ),
                 ],
                 Expanded(
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: isUser ? '追加質問を入力...' : '回答を入力...',
+                      hintText: isUser
+                          ? '追加質問を入力...'
+                          : (canProAnswer ? 'コメントを追加（任意）...' : '回答を入力...'),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
@@ -269,7 +506,7 @@ class _DiagnosisDetailScreenState extends ConsumerState<DiagnosisDetailScreen> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: _isSending
+                  icon: (_isSending || _isUploadingVideo)
                       ? const SizedBox(
                           width: 24,
                           height: 24,
@@ -277,7 +514,17 @@ class _DiagnosisDetailScreenState extends ConsumerState<DiagnosisDetailScreen> {
                         )
                       : const Icon(Icons.send),
                   color: AppColors.primary,
-                  onPressed: _isSending ? null : () => _sendMessage(diagnosis),
+                  onPressed: (_isSending || _isUploadingVideo)
+                      ? null
+                      : () {
+                          if (canProAnswer && _selectedAnswerVideo != null) {
+                            // プロが動画回答を送信
+                            _submitAnswer(diagnosis);
+                          } else {
+                            // 通常のテキストメッセージ送信
+                            _sendMessage(diagnosis);
+                          }
+                        },
                 ),
               ],
             ),
@@ -289,7 +536,9 @@ class _DiagnosisDetailScreenState extends ConsumerState<DiagnosisDetailScreen> {
 
   Future<void> _sendMessage(Diagnosis diagnosis) async {
     final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+    final hasVideo = _selectedAnswerVideo != null;
+
+    if (text.isEmpty && !hasVideo) return;
 
     setState(() => _isSending = true);
 
@@ -308,13 +557,22 @@ class _DiagnosisDetailScreenState extends ConsumerState<DiagnosisDetailScreen> {
             : MessageType.followupAnswer;
       }
 
+      // 動画がある場合は変換 + アップロード
+      final videoUrl = hasVideo
+          ? await _uploadVideo(diagnosisId: diagnosis.id)
+          : null;
+
       await repo.addMessage(
         diagnosisId: diagnosis.id,
         messageType: messageType,
-        text: text,
+        text: text.isNotEmpty ? text : null,
+        videoUrl: videoUrl,
       );
 
       _messageController.clear();
+      setState(() {
+        _selectedAnswerVideo = null;
+      });
       ref.invalidate(diagnosisDetailProvider(widget.diagnosisId));
     } catch (e) {
       if (mounted) {

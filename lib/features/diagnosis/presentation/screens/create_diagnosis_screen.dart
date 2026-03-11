@@ -108,7 +108,7 @@ class _CreateDiagnosisScreenState extends ConsumerState<CreateDiagnosisScreen> {
         return;
       }
 
-      // Upload video to storage (works on both web and mobile)
+      // 動画をアップロード
       final bytes = await _selectedVideo!.readAsBytes();
       final videoUrl = await diagnosisRepo.uploadVideoBytes(
         bytes: bytes,
