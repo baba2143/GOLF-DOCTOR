@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GOLF DOCTOR - App Screens</title>
+  <style>
+    :root {
+      --primary: #1B5E20;
+      --primary-light: #4CAF50;
+      --accent: #FFD700;
+      --bg: #F5F5F5;
+      --card: #FFFFFF;
+      --text: #333333;
+      --text-secondary: #666666;
+      --border: #E0E0E0;
+      --success: #4CAF50;
+      --warning: #FF9800;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      margin-bottom: 16px;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 48px;
+    }
+
+    .section-title {
+      color: white;
+      text-align: center;
+      font-size: 1.4rem;
+      margin: 48px 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .section-title::before,
+    .section-title::after {
+      content: '';
+      height: 1px;
+      width: 60px;
+      background: linear-gradient(90deg, transparent, #4CAF50, transparent);
+    }
+
+    .phone-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .phone-wrapper {
+      text-align: center;
+    }
+
+    .phone-label {
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    /* iPhone Frame */
+    .iphone {
+      width: 280px;
+      height: 580px;
+      background: #1a1a1a;
+      border-radius: 44px;
+      padding: 12px;
+      box-shadow:
+        0 0 0 2px #333,
+        0 20px 60px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .iphone::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 28px;
+      background: #1a1a1a;
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      border-radius: 36px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      background: var(--card);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 24px 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-bar-dark {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* App Bar */
+    .app-bar {
+      background: var(--card);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-bar-dark {
+      background: var(--primary);
+      color: white;
+      border-bottom: none;
+    }
+
+    .app-bar h2 {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .back-btn {
+      font-size: 20px;
+    }
+
+    /* Content Area */
+    .content {
+      padding: 16px;
+      height: calc(100% - 44px - 50px - 80px);
+      overflow: hidden;
+    }
+
+    .content-full {
+      height: calc(100% - 44px - 50px);
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      padding-top: 8px;
+    }
+
+    .nav-item {
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+
+    /* Cards */
+    .pro-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .pro-avatar {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .pro-info {
+      flex: 1;
+    }
+
+    .pro-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .pro-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .star {
+      color: #FFD700;
+    }
+
+    .pro-price {
+      text-align: right;
+    }
+
+    .price-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+
+    .price-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Diagnosis Card */
+    .diagnosis-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .diagnosis-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .diagnosis-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar-small {
+      width: 36px;
+      height: 36px;
+      background: #E0E0E0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .status-badge {
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #FFF3E0;
+      color: #E65100;
+    }
+
+    .status-answered {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+
+    .diagnosis-preview {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .diagnosis-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Message Bubbles */
+    .message-area {
+      padding: 12px;
+      height: calc(100% - 44px - 50px - 60px);
+      overflow: hidden;
+    }
+
+    .message {
+      max-width: 80%;
+      margin-bottom: 12px;
+      clear: both;
+    }
+
+    .message-left {
+      float: left;
+    }
+
+    .message-right {
+      float: right;
+    }
+
+    .message-bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .bubble-left {
+      background: var(--card);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble-right {
+      background: var(--primary);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-type {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      display: inline-block;
+    }
+
+    .type-request {
+      background: rgba(27, 94, 32, 0.1);
+      color: var(--primary);
+    }
+
+    .type-answer {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .video-thumb {
+      width: 100%;
+      height: 80px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .video-thumb span {
+      color: white;
+      font-size: 24px;
+    }
+
+    .message-input {
+      position: absolute;
+      bottom: 80px;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+    }
+
+    .input-field {
+      flex: 1;
+      height: 36px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+
+    .send-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+    }
+
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Earnings */
+    .earnings-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .earnings-amount {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .earnings-label {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .history-item {
+      background: var(--card);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-date {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .history-amount {
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    /* Video Upload Area */
+    .upload-area {
+      background: var(--card);
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .upload-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Pro Detail */
+    .pro-header {
+      text-align: center;
+      padding: 20px;
+      background: var(--card);
+    }
+
+    .pro-avatar-large {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+    }
+
+    .pro-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .pro-rating {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .pro-stats {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .pro-stat {
+      text-align: center;
+    }
+
+    .pro-stat-value {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .pro-stat-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+
+    .action-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      width: calc(100% - 32px);
+      margin: 16px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>GOLF DOCTOR</h1>
+  <p class="subtitle">アプリ画面イメージ</p>
+
+  <!-- User Screens -->
+  <h2 class="section-title">ユーザー向け画面</h2>
+
+  <div class="phone-grid">
+    <!-- Home Screen (Real Screenshot) -->
+    <div class="phone-wrapper">
+      <div class="phone-label">ホーム画面</div>
+      <div class="iphone" style="width: 300px; height: 620px;">
+        <div class="screen" style="background: #fff;">
+          <img src="screenshot_home.png" alt="ホーム画面" style="width: 100%; height: 100%; object-fit: cover; border-radius: 36px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Pro List Screen -->
+    <div class="phone-wrapper">
+      <div class="phone-label">プロ一覧</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar">
+            <h2>プロを探す</h2>
+          </div>
+          <div class="content">
+            <div class="pro-card">
+              <div class="pro-avatar">田</div>
+              <div class="pro-info">
+                <div class="pro-name">田中 一郎</div>
+                <div class="pro-meta">
+                  <span class="star">★</span> 4.9 (128件)
+                </div>
+                <div class="pro-meta">PGA認定ティーチングプロ</div>
+              </div>
+              <div class="pro-price">
+                <div class="price-label">診断料金</div>
+                <div class="price-value">¥5,000</div>
+              </div>
+            </div>
+            <div class="pro-card">
+              <div class="pro-avatar">佐</div>
+              <div class="pro-info">
+                <div class="pro-name">佐藤 美咲</div>
+                <div class="pro-meta">
+                  <span class="star">★</span> 4.8 (96件)
+                </div>
+                <div class="pro-meta">LPGA認定プロ</div>
+              </div>
+              <div class="pro-price">
+                <div class="price-label">診断料金</div>
+                <div class="price-value">¥4,500</div>
+              </div>
+            </div>
+            <div class="pro-card">
+              <div class="pro-avatar">山</div>
+              <div class="pro-info">
+                <div class="pro-name">山本 健太</div>
+                <div class="pro-meta">
+                  <span class="star">★</span> 4.7 (84件)
+                </div>
+                <div class="pro-meta">レッスン歴15年</div>
+              </div>
+              <div class="pro-price">
+                <div class="price-label">診断料金</div>
+                <div class="price-value">¥3,500</div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon">🏠</div>ホーム</div>
+            <div class="nav-item active"><div class="nav-icon">👤</div>プロ</div>
+            <div class="nav-item"><div class="nav-icon">📋</div>診断</div>
+            <div class="nav-item"><div class="nav-icon">💰</div>ポイント</div>
+            <div class="nav-item"><div class="nav-icon">⚙️</div>設定</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pro Detail Screen -->
+    <div class="phone-wrapper">
+      <div class="phone-label">プロ詳細</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar status-bar-dark">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar app-bar-dark">
+            <span class="back-btn">‹</span>
+            <h2>プロフィール</h2>
+          </div>
+          <div class="content content-full" style="padding: 0;">
+            <div class="pro-header">
+              <div class="pro-avatar-large">田</div>
+              <div class="pro-title">田中 一郎</div>
+              <div class="pro-rating">
+                <span class="star">★</span> 4.9 (128件のレビュー)
+              </div>
+              <div class="pro-stats">
+                <div class="pro-stat">
+                  <div class="pro-stat-value">1,240</div>
+                  <div class="pro-stat-label">診断件数</div>
+                </div>
+                <div class="pro-stat">
+                  <div class="pro-stat-value">15年</div>
+                  <div class="pro-stat-label">指導歴</div>
+                </div>
+                <div class="pro-stat">
+                  <div class="pro-stat-value">98%</div>
+                  <div class="pro-stat-label">回答率</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding: 16px;">
+              <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">自己紹介</div>
+              <div style="font-size: 13px; color: #666; line-height: 1.6;">
+                PGA認定ティーチングプロとして15年以上の指導経験があります。アマチュアからプロまで幅広く指導。特にスイング改善とスコアアップを得意としています。
+              </div>
+              <div style="font-weight: 600; margin: 16px 0 8px; font-size: 14px;">得意分野</div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span style="background: #E8F5E9; color: #2E7D32; padding: 4px 12px; border-radius: 16px; font-size: 12px;">スイング改善</span>
+                <span style="background: #E8F5E9; color: #2E7D32; padding: 4px 12px; border-radius: 16px; font-size: 12px;">飛距離UP</span>
+                <span style="background: #E8F5E9; color: #2E7D32; padding: 4px 12px; border-radius: 16px; font-size: 12px;">アプローチ</span>
+              </div>
+            </div>
+            <button class="action-btn">¥5,000 で診断を依頼</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Diagnosis Screen -->
+    <div class="phone-wrapper">
+      <div class="phone-label">診断依頼</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar">
+            <span class="back-btn">‹</span>
+            <h2>診断を依頼</h2>
+          </div>
+          <div class="content content-full">
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">スイング動画</div>
+            <div style="font-size: 12px; color: #666; margin-bottom: 12px;">診断してほしいスイングの動画を選択（最大60秒）</div>
+            <div class="upload-area">
+              <div class="upload-icon">🎬</div>
+              <div class="upload-text">タップして動画を選択<br>または撮影</div>
+            </div>
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">メッセージ（任意）</div>
+            <div style="background: #fff; border: 1px solid #E0E0E0; border-radius: 12px; padding: 12px; min-height: 80px; font-size: 13px; color: #999;">
+              悩んでいることや見てほしいポイントを記入...
+            </div>
+            <div style="background: #E3F2FD; border-radius: 12px; padding: 14px; margin-top: 16px;">
+              <div style="font-size: 12px; color: #1565C0;">
+                <strong>診断について</strong><br>
+                ・プロは48時間以内に回答します<br>
+                ・回答後、3回まで追加質問可能<br>
+                ・期限内に回答がない場合は返金
+              </div>
+            </div>
+            <button class="action-btn" style="position: absolute; bottom: 16px; width: calc(100% - 32px);">5,000ポイントで診断を依頼</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diagnosis Chat Screen -->
+    <div class="phone-wrapper">
+      <div class="phone-label">診断詳細</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar">
+            <span class="back-btn">‹</span>
+            <h2>田中プロとの診断</h2>
+          </div>
+          <div class="message-area">
+            <div class="message message-left">
+              <span class="message-type type-request">依頼</span>
+              <div class="message-bubble bubble-left">
+                ドライバーのスライスが治りません。アドバイスお願いします。
+                <div class="video-thumb"><span>▶</span></div>
+              </div>
+            </div>
+            <div class="message message-right" style="margin-top: 40px;">
+              <span class="message-type type-answer">回答</span>
+              <div class="message-bubble bubble-right">
+                拝見しました！グリップとテイクバックに改善点がありますね。詳しく動画で解説します。
+                <div class="video-thumb"><span>▶</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="message-input">
+            <span>🎬</span>
+            <input type="text" class="input-field" placeholder="追加質問を入力...">
+            <div class="send-btn">→</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon">🏠</div>ホーム</div>
+            <div class="nav-item"><div class="nav-icon">👤</div>プロ</div>
+            <div class="nav-item active"><div class="nav-icon">📋</div>診断</div>
+            <div class="nav-item"><div class="nav-icon">💰</div>ポイント</div>
+            <div class="nav-item"><div class="nav-icon">⚙️</div>設定</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pro Screens -->
+  <h2 class="section-title">プロ向け画面</h2>
+
+  <div class="phone-grid">
+    <!-- Pro Dashboard -->
+    <div class="phone-wrapper">
+      <div class="phone-label">ダッシュボード</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar status-bar-dark">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar app-bar-dark">
+            <h2>ダッシュボード</h2>
+          </div>
+          <div class="content content-full">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">未回答の依頼</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">24</div>
+                <div class="stat-label">今月の診断数</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">4.9</div>
+                <div class="stat-label">平均評価</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">98%</div>
+                <div class="stat-label">回答率</div>
+              </div>
+            </div>
+            <div style="font-weight: 600; margin-bottom: 12px; font-size: 14px;">未回答の依頼</div>
+            <div class="diagnosis-card">
+              <div class="diagnosis-header">
+                <div class="diagnosis-user">
+                  <div class="user-avatar-small">鈴</div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px;">鈴木さん</div>
+                    <div style="font-size: 11px; color: #666;">残り23時間</div>
+                  </div>
+                </div>
+                <span class="status-badge status-pending">回答待ち</span>
+              </div>
+              <div class="diagnosis-preview">ドライバーの飛距離が伸びません...</div>
+            </div>
+            <div class="diagnosis-card">
+              <div class="diagnosis-header">
+                <div class="diagnosis-user">
+                  <div class="user-avatar-small">高</div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px;">高橋さん</div>
+                    <div style="font-size: 11px; color: #666;">残り36時間</div>
+                  </div>
+                </div>
+                <span class="status-badge status-pending">回答待ち</span>
+              </div>
+              <div class="diagnosis-preview">アプローチでダフリが多いです...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Answer Screen -->
+    <div class="phone-wrapper">
+      <div class="phone-label">回答画面</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar">
+            <span class="back-btn">‹</span>
+            <h2>診断に回答</h2>
+          </div>
+          <div class="content content-full">
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">ユーザーの動画</div>
+            <div style="background: #1a1a1a; border-radius: 12px; height: 140px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+              <span style="color: white; font-size: 40px;">▶</span>
+            </div>
+            <div style="background: #F5F5F5; border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+              <div style="font-size: 12px; color: #666;">
+                「ドライバーのスライスが治りません。特にティーショットで右に曲がってしまいます。」
+              </div>
+            </div>
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">回答動画</div>
+            <div class="upload-area" style="padding: 16px;">
+              <div class="upload-icon">🎬</div>
+              <div class="upload-text">動画で回答する</div>
+            </div>
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">コメント（任意）</div>
+            <div style="background: #fff; border: 1px solid #E0E0E0; border-radius: 12px; padding: 12px; min-height: 60px; font-size: 13px; color: #999;">
+              補足コメントを入力...
+            </div>
+            <button class="action-btn" style="margin-top: 16px;">回答を送信</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Earnings Screen -->
+    <div class="phone-wrapper">
+      <div class="phone-label">収益管理</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar">
+            <span class="back-btn">‹</span>
+            <h2>収益管理</h2>
+          </div>
+          <div class="content content-full">
+            <div class="earnings-header">
+              <div class="earnings-label">今月の収益</div>
+              <div class="earnings-amount">¥96,000</div>
+              <div class="earnings-label" style="margin-top: 8px;">24件 × ¥5,000 × 80%</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-weight: 600; font-size: 14px;">振込履歴</span>
+              <span style="font-size: 12px; color: #666;">すべて見る ›</span>
+            </div>
+            <div class="history-item">
+              <div>
+                <div style="font-weight: 500; font-size: 13px;">2月分振込</div>
+                <div class="history-date">2025/03/15</div>
+              </div>
+              <div class="history-amount">+¥84,000</div>
+            </div>
+            <div class="history-item">
+              <div>
+                <div style="font-weight: 500; font-size: 13px;">1月分振込</div>
+                <div class="history-date">2025/02/15</div>
+              </div>
+              <div class="history-amount">+¥72,000</div>
+            </div>
+            <div class="history-item">
+              <div>
+                <div style="font-weight: 500; font-size: 13px;">12月分振込</div>
+                <div class="history-date">2025/01/15</div>
+              </div>
+              <div class="history-amount">+¥68,000</div>
+            </div>
+            <div style="background: #FFF3E0; border-radius: 12px; padding: 14px; margin-top: 16px;">
+              <div style="font-size: 12px; color: #E65100;">
+                <strong>次回振込予定</strong><br>
+                2025/04/15: ¥96,000（税込）
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diagnosis List (Pro View) -->
+    <div class="phone-wrapper">
+      <div class="phone-label">診断一覧（プロ）</div>
+      <div class="iphone">
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>📶 📡 🔋</span>
+          </div>
+          <div class="app-bar">
+            <h2>診断履歴</h2>
+          </div>
+          <div class="content">
+            <div class="diagnosis-card">
+              <div class="diagnosis-header">
+                <div class="diagnosis-user">
+                  <div class="user-avatar-small">鈴</div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px;">鈴木さん</div>
+                  </div>
+                </div>
+                <span class="status-badge status-pending">回答待ち</span>
+              </div>
+              <div class="diagnosis-preview">ドライバーの飛距離が伸びません...</div>
+              <div class="diagnosis-footer">
+                <span>3/10 14:30</span>
+                <span>¥5,000</span>
+              </div>
+            </div>
+            <div class="diagnosis-card">
+              <div class="diagnosis-header">
+                <div class="diagnosis-user">
+                  <div class="user-avatar-small">伊</div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px;">伊藤さん</div>
+                  </div>
+                </div>
+                <span class="status-badge status-answered">回答済み</span>
+              </div>
+              <div class="diagnosis-preview">バンカーショットのコツを教えて...</div>
+              <div class="diagnosis-footer">
+                <span>3/8 10:15</span>
+                <span>¥5,000</span>
+              </div>
+            </div>
+            <div class="diagnosis-card">
+              <div class="diagnosis-header">
+                <div class="diagnosis-user">
+                  <div class="user-avatar-small">中</div>
+                  <div>
+                    <div style="font-weight: 600; font-size: 13px;">中村さん</div>
+                  </div>
+                </div>
+                <span class="status-badge status-answered">回答済み</span>
+              </div>
+              <div class="diagnosis-preview">パターの距離感が安定しません...</div>
+              <div class="diagnosis-footer">
+                <span>3/5 16:45</span>
+                <span>¥5,000</span>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item active"><div class="nav-icon">📊</div>ダッシュ</div>
+            <div class="nav-item"><div class="nav-icon">📋</div>診断</div>
+            <div class="nav-item"><div class="nav-icon">💰</div>収益</div>
+            <div class="nav-item"><div class="nav-icon">⚙️</div>設定</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 60px; color: #666; font-size: 14px;">
+    ※ 画面はイメージです。実際のアプリとは異なる場合があります。
+  </div>
+
+</body>
+</html>
